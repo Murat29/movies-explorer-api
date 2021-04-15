@@ -24,17 +24,13 @@ const limiter = rateLimit({
 app.use(limiter);
 
 const corsOptions = {
-  origin: [
-    'https://murat.mesto.nomoredomains.icu',
-    'http://murat.mesto.nomoredomains.icu',
-    'http://localhost:3000',
-  ],
+  origin: ['http://localhost:3000'],
   credentials: true,
 };
 app.use('*', cors(corsOptions));
 app.use(helmet());
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
   useUnifiedTopology: true,
   useNewUrlParser: true,
   useCreateIndex: true,

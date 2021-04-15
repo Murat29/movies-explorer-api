@@ -1,10 +1,11 @@
-const Card = require('../models/card');
+const Card = require('../models/movie');
 const ConflictError = require('../errors/conflict-err');
 const NotFoundError = require('../errors/not-found-err');
 
 // GET
 module.exports.getCards = (req, res, next) => {
-  Card.find({}).populate('user')
+  Card.find({})
+    .populate('user')
     .then((cards) => res.send(cards))
     .catch(next);
 };
@@ -22,7 +23,9 @@ module.exports.createCard = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
-      if (String(card.owner) !== req.user._id) throw new ConflictError('Нельзя удалить чужую карточку');
+      if (String(card.owner) !== req.user._id) {
+        throw new ConflictError('Нельзя удалить чужую карточку');
+      }
       return Card.findByIdAndRemove(req.params.cardId);
     })
     .then((card) => {
@@ -33,11 +36,7 @@ module.exports.deleteCard = (req, res, next) => {
 };
 
 module.exports.deleteLike = (req, res, next) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } },
-    { new: true },
-  )
+  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) throw new NotFoundError('Такой карточки нет');
       return res.send(card);
@@ -47,11 +46,7 @@ module.exports.deleteLike = (req, res, next) => {
 
 // PUT
 module.exports.createLike = (req, res, next) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true },
-  )
+  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) throw new NotFoundError('Такой карточки нет');
       return res.send(card);
