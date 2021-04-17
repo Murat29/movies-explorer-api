@@ -5,12 +5,6 @@ const NotFoundError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-err');
 
 // GET
-module.exports.getUsers = (req, res, next) => {
-  User.find({})
-    .then((users) => res.send(users))
-    .catch(next);
-};
-
 module.exports.getUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
@@ -22,9 +16,7 @@ module.exports.getUser = (req, res, next) => {
 
 // POST
 module.exports.createUser = (req, res, next) => {
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
+  const { name, email, password } = req.body;
   User.findOne({ email })
     .then((user) => {
       if (!(user === null)) throw new ConflictError('Пользователь с таким email зарегестрирован');
@@ -32,16 +24,12 @@ module.exports.createUser = (req, res, next) => {
     .then(() => bcrypt.hash(password, 10))
     .then((hash) => User.create({
       name,
-      about,
-      avatar,
       email,
       password: hash,
     }))
     .then((user) => {
       res.send({
         name: user.name,
-        about: user.about,
-        avatar: user.avatar,
         email: user.email,
       });
     })
@@ -63,37 +51,24 @@ module.exports.login = (req, res, next) => {
 };
 
 // PATCH
-module.exports.updateNameAndAboutUser = (req, res, next) => {
-  const { name, about } = req.body;
-
-  User.findByIdAndUpdate(
-    req.user._id,
-    { name, about },
-    {
-      new: true,
-      runValidators: true,
-      upsert: true,
-    },
-  )
+module.exports.updateNameAndEmail = (req, res, next) => {
+  const { name, email } = req.body;
+  User.findOne({ email })
+    .then((user) => {
+      if (user) throw new ConflictError('Пользователь с таким email зарегестрирован');
+      return User.findByIdAndUpdate(
+        req.user._id,
+        { name, email },
+        {
+          new: true,
+          runValidators: true,
+          upsert: true,
+        },
+      );
+    })
     .then((user) => {
       if (!user) throw new NotFoundError('Такого пользователя нет');
       return res.send(user);
     })
-    .catch(next);
-};
-
-module.exports.updateAvatarUsers = (req, res, next) => {
-  const { avatar } = req.body;
-
-  User.findByIdAndUpdate(
-    req.user._id,
-    { avatar },
-    {
-      new: true,
-      runValidators: true,
-      upsert: true,
-    },
-  )
-    .then((user) => res.send(user))
     .catch(next);
 };

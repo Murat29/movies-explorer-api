@@ -40,7 +40,7 @@ const cardSchema = new mongoose.Schema(
         validator(v) {
           return validator.isURL(v);
         },
-        message: 'Не правильная ссылка на постер',
+        message: 'Не правильная ссылка на трейлер',
       },
     },
     thumbnail: {
@@ -50,7 +50,7 @@ const cardSchema = new mongoose.Schema(
         validator(v) {
           return validator.isURL(v);
         },
-        message: 'Не правильная ссылка на постер',
+        message: 'Не правильная ссылка на миниатюрное изображение постер',
       },
     },
     owner: {
@@ -59,7 +59,7 @@ const cardSchema = new mongoose.Schema(
       required: true,
     },
     movieId: {
-      type: Number,
+      type: String,
       required: true,
       unique: true,
     },
@@ -72,7 +72,7 @@ const cardSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { versionKey: false, _id: false },
+  { versionKey: false },
 );
 
 module.exports = mongoose.model('movie', cardSchema);
