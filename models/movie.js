@@ -1,5 +1,10 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const {
+  incorrectPosterLink,
+  incorrectMiniPosterLink,
+  incorrectTrailerLink,
+} = require('../errors/error-messages');
 
 const cardSchema = new mongoose.Schema(
   {
@@ -30,7 +35,7 @@ const cardSchema = new mongoose.Schema(
         validator(v) {
           return validator.isURL(v);
         },
-        message: 'Не правильная ссылка на постер',
+        message: incorrectPosterLink,
       },
     },
     trailer: {
@@ -40,7 +45,7 @@ const cardSchema = new mongoose.Schema(
         validator(v) {
           return validator.isURL(v);
         },
-        message: 'Не правильная ссылка на трейлер',
+        message: incorrectTrailerLink,
       },
     },
     thumbnail: {
@@ -50,7 +55,7 @@ const cardSchema = new mongoose.Schema(
         validator(v) {
           return validator.isURL(v);
         },
-        message: 'Не правильная ссылка на миниатюрное изображение постер',
+        message: incorrectMiniPosterLink,
       },
     },
     owner: {

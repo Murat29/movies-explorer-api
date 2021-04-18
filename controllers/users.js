@@ -3,12 +3,13 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-err');
+const { noUser, emailIsBusy } = require('../errors/error-messages');
 
 // GET
 module.exports.getUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
-      if (!user) throw new NotFoundError('Такого пользователя нет');
+      if (!user) throw new NotFoundError(noUser);
       return res.send(user);
     })
     .catch(next);
@@ -19,7 +20,7 @@ module.exports.createUser = (req, res, next) => {
   const { name, email, password } = req.body;
   User.findOne({ email })
     .then((user) => {
-      if (!(user === null)) throw new ConflictError('Пользователь с таким email зарегестрирован');
+      if (!(user === null)) throw new ConflictError(emailIsBusy);
     })
     .then(() => bcrypt.hash(password, 10))
     .then((hash) => User.create({
@@ -55,19 +56,18 @@ module.exports.updateNameAndEmail = (req, res, next) => {
   const { name, email } = req.body;
   User.findOne({ email })
     .then((user) => {
-      if (user) throw new ConflictError('Пользователь с таким email зарегестрирован');
+      if (user) throw new ConflictError(emailIsBusy);
       return User.findByIdAndUpdate(
         req.user._id,
         { name, email },
         {
           new: true,
           runValidators: true,
-          upsert: true,
         },
       );
     })
     .then((user) => {
-      if (!user) throw new NotFoundError('Такого пользователя нет');
+      if (!user) throw new NotFoundError(noUser);
       return res.send(user);
     })
     .catch(next);

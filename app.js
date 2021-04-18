@@ -4,23 +4,22 @@ const mongoose = require('mongoose');
 const { celebrate, Joi, errors } = require('celebrate');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-const routeMovies = require('./routes/movie.js');
-const routeUsers = require('./routes/users.js');
+const appRouter = require('./routes/index');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const { limiter } = require('./middlewares/limiter');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const NotFoundError = require('./errors/not-found-err');
+const {
+  theRequestedResourceIsNotFound,
+  anErrorOccurredOnTheServer,
+} = require('./errors/error-messages');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, ADDRESS_DB = 'devdb' } = process.env;
 const app = express();
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-});
-
+app.use(requestLogger);
 app.use(limiter);
 
 const corsOptions = {
@@ -30,7 +29,7 @@ const corsOptions = {
 app.use('*', cors(corsOptions));
 app.use(helmet());
 
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
+mongoose.connect(`mongodb://localhost:27017/${ADDRESS_DB}`, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
   useCreateIndex: true,
@@ -39,8 +38,6 @@ mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(requestLogger);
 
 app.post(
   '/signin',
@@ -66,11 +63,10 @@ app.post(
 );
 
 app.use(auth);
-app.use('/', routeMovies);
-app.use('/', routeUsers);
+app.use('/', appRouter);
 
 app.use(() => {
-  throw new NotFoundError('Запрашиваемый ресурс не найден');
+  throw new NotFoundError(theRequestedResourceIsNotFound);
 });
 
 app.use(errorLogger);
@@ -82,7 +78,7 @@ app.use((err, req, res, next) => {
   }
   const { statusCode = 500, message } = err;
   return res.status(statusCode).send({
-    message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
+    message: statusCode === 500 ? anErrorOccurredOnTheServer : message,
   });
 });
 
