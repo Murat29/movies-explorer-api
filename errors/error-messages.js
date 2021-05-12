@@ -1,0 +1,12 @@
+module.exports.noMovie = 'Такого фильма нет';
+module.exports.noUser = 'Такого пользователя нет';
+module.exports.authorizationRequired = 'Необходима авторизация';
+module.exports.deletingNotYourOwnMovie = 'Нельзя удалить чужой фильм';
+module.exports.emailIsBusy = 'Пользователь с таким email зарегестрирован';
+module.exports.incorrectPosterLink = 'Не правильная ссылка на постер';
+module.exports.incorrectMiniPosterLink = 'Не правильная ссылка на миниатюрное изображение постер';
+module.exports.incorrectTrailerLink = 'Не правильная ссылка на трейлер';
+module.exports.invalidEmail = 'Не валидный email';
+module.exports.incorrectEmailOrPassword = 'Неправильные почта или пароль';
+module.exports.theRequestedResourceIsNotFound = 'Запрашиваемый ресурс не найден';
+module.exports.anErrorOccurredOnTheServer = 'На сервере произошла ошибка';
