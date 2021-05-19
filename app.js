@@ -23,7 +23,7 @@ app.use(requestLogger);
 app.use(limiter);
 
 const corsOptions = {
-  origin: ['https://murat.movies.nomoredomains.icu, http://murat.movies.nomoredomains.icu/'],
+  origin: ['https://murat.movies.nomoredomains.icu', 'http://murat.movies.nomoredomains.icu/'],
   credentials: true,
 };
 app.use('*', cors(corsOptions));
