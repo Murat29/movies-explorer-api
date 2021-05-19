@@ -15,28 +15,26 @@ module.exports.getMovies = (req, res, next) => {
 // POST
 module.exports.createMovie = (req, res, next) => {
   const {
+    id,
     country,
     director,
     duration,
     year,
     description,
     image,
-    trailer,
-    thumbnail,
-    movieId,
+    trailerLink,
     nameRU,
     nameEN,
   } = req.body;
   Movie.create({
+    id,
     country,
     director,
     duration,
     year,
     description,
     image,
-    trailer,
-    thumbnail,
-    movieId,
+    trailerLink,
     nameRU,
     nameEN,
     owner: req.user._id,
@@ -47,13 +45,13 @@ module.exports.createMovie = (req, res, next) => {
 
 // DELETE
 module.exports.deleteMovie = (req, res, next) => {
-  Movie.findById(req.params.movieId)
+  Movie.findOne({ id: req.params.id })
     .then((movie) => {
       if (!movie) throw new NotFoundError(noMovie);
       if (String(movie.owner) !== req.user._id) {
         throw new ConflictError(deletingNotYourOwnMovie);
       }
-      return Movie.findByIdAndRemove(req.params.movieId);
+      return Movie.findOneAndDelete({ id: req.params.id });
     })
     .then((movie) => res.send(movie))
     .catch(next);

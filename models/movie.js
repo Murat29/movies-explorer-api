@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const {
-  incorrectPosterLink,
-  incorrectMiniPosterLink,
-  incorrectTrailerLink,
-} = require('../errors/error-messages');
+const { incorrectTrailerLink } = require('../errors/error-messages');
 
 const cardSchema = new mongoose.Schema(
   {
+    id: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
     country: {
       type: String,
       required: true,
@@ -29,16 +30,10 @@ const cardSchema = new mongoose.Schema(
       required: true,
     },
     image: {
-      type: String,
+      type: Object,
       required: true,
-      validate: {
-        validator(v) {
-          return validator.isURL(v);
-        },
-        message: incorrectPosterLink,
-      },
     },
-    trailer: {
+    trailerLink: {
       type: String,
       required: true,
       validate: {
@@ -48,25 +43,10 @@ const cardSchema = new mongoose.Schema(
         message: incorrectTrailerLink,
       },
     },
-    thumbnail: {
-      type: String,
-      required: true,
-      validate: {
-        validator(v) {
-          return validator.isURL(v);
-        },
-        message: incorrectMiniPosterLink,
-      },
-    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'user',
       required: true,
-    },
-    movieId: {
-      type: String,
-      required: true,
-      unique: true,
     },
     nameRU: {
       type: String,

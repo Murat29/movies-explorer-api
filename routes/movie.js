@@ -6,33 +6,28 @@ movieRouter.get('/movies', getMovies);
 movieRouter.post(
   '/movies',
   celebrate({
-    body: Joi.object().keys({
-      country: Joi.string().required(),
-      director: Joi.string().required(),
-      duration: Joi.number().required(),
-      year: Joi.string().required(),
-      description: Joi.string().required(),
-      image: Joi.string()
-        .required()
-        .regex(/^(http|https):\/\/\S/),
-      trailer: Joi.string()
-        .required()
-        .regex(/^(http|https):\/\/\S/),
-      thumbnail: Joi.string()
-        .required()
-        .regex(/^(http|https):\/\/\S/),
-      movieId: Joi.string().required(),
-      nameRU: Joi.string().required(),
-      nameEN: Joi.string().required(),
-    }),
+    body: Joi.object()
+      .keys({
+        id: Joi.number().required(),
+        country: Joi.string().required(),
+        director: Joi.string().required(),
+        duration: Joi.number().required(),
+        year: Joi.string().required(),
+        description: Joi.string().required(),
+        image: Joi.object().required(),
+        trailerLink: Joi.string().required(),
+        nameRU: Joi.string().required(),
+        nameEN: Joi.string().required(),
+      })
+      .unknown(true),
   }),
   createMovie,
 );
 movieRouter.delete(
-  '/movies/:movieId',
+  '/movies/:id',
   celebrate({
     params: Joi.object().keys({
-      movieId: Joi.string().hex().length(24),
+      id: Joi.number(),
     }),
   }),
   deleteMovie,
